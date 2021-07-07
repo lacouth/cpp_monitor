@@ -142,7 +142,7 @@ vector<string> LinuxParser::CpuUtilization() {
     std::istringstream linestream(line);
     linestream >> value;
     while (linestream >> value) {
-      cpuUtilization.push_back(value);
+      cpuUtilization.emplace_back(value);
     }
   }
   return cpuUtilization;
@@ -167,12 +167,12 @@ long LinuxParser::GetValueFromStat(std::string key) {
 
 // Read and return the total number of processes
 int LinuxParser::TotalProcesses() {
-  return LinuxParser::GetValueFromStat("processes");
+  return LinuxParser::GetValueFromStat(filterProcesses);
 }
 
 // Read and return the number of running processes
 int LinuxParser::RunningProcesses() {
-  return LinuxParser::GetValueFromStat("procs_running");
+  return LinuxParser::GetValueFromStat(filterRunningProcesses);
 }
 
 // Read and return the command associated with a process
@@ -201,14 +201,14 @@ string LinuxParser::GetInfoFromProcess(int pid, string info) {
 }
 
 // Read and return the memory used by a process
-
+// as suggested, the use of VmRSS is more accurate than VmSize
 string LinuxParser::Ram(int pid) {
-  return LinuxParser::GetInfoFromProcess(pid, "VmSize:");
+  return LinuxParser::GetInfoFromProcess(pid, filterProcMem);
 }
 
 // Read and return the user ID associated with a process
 string LinuxParser::Uid(int pid) {
-  return LinuxParser::GetInfoFromProcess(pid, "Uid:");
+  return LinuxParser::GetInfoFromProcess(pid, filterUID);
 }
 
 // Read and return the user associated with a process
@@ -243,7 +243,7 @@ long LinuxParser::UpTime(int pid) {
       stream >> value;
       ++i;
     }
-    return stol(value) / sysconf(_SC_CLK_TCK);
+    return UpTime() - stol(value) / sysconf(_SC_CLK_TCK);
   }
   return 0;
 }

@@ -29,18 +29,19 @@ float Process::CpuUtilization() {
 }
 
 // Return the command that generated this process
-string Process::Command() { return LinuxParser::Command(_pid); }
+string Process::Command() {
+  string cmd = LinuxParser::Command(_pid);
+  return cmd.size() < 40 ? cmd : cmd.substr(0, 40) + "...";
+}
 
 // Return this process's memory utilization
 string Process::Ram() {
   string ram_str = LinuxParser::Ram(_pid);
   if (ram_str.size()) {
-    float ram = stof(ram_str) / 1024.0;
-    std::stringstream stream;
-    stream << std::fixed << std::setprecision(2) << ram;
-    return stream.str();
+    int ram = stoi(ram_str) / 1024;
+    return to_string(ram);
   }
-  return "0.0";
+  return "0";
 }
 
 // Return the user (name) that generated this process

@@ -1,7 +1,7 @@
 #include "processor.h"
 
-// TODO: Return the aggregate CPU utilization
-float Processor::Utilization() {
+// Return the aggregate CPU utilization
+double Processor::Utilization() {
   auto total_1 = LinuxParser::Jiffies();
   auto active_1 = LinuxParser::ActiveJiffies();
 
@@ -15,5 +15,5 @@ float Processor::Utilization() {
 
   if (total_f <= 0) return 0.0;
 
-  return active_f / float(total_f);
+  return active_f / static_cast<double>(total_f);
 }
